@@ -13,10 +13,6 @@ services:
 
   web:
     build: .
-    command: >
-        sh -c "python manage.py makemigrations &&
-               python manage.py migrate &&
-               python manage.py runserver 0.0.0.0:1337"
     volumes:
       - .:/usr/src/app
     ports:
@@ -25,6 +21,11 @@ services:
       - db
     environment:
       - DATABASE_URL=postgres://scanner:scanner@db:5432/scanner
+      - POSTGRES_DB=scanner
+      - POSTGRES_USER=scanner
+      - POSTGRES_PASSWORD=scanner
+      - DB_HOST=db
 
 volumes:
   dbdata:
+
