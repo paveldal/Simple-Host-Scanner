@@ -4,11 +4,12 @@ services:
   db:
     image: postgres
     volumes:
-      - ./data/db:/var/lib/postgresql/data
+      - dbdata:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=scanner
       - POSTGRES_USER=scanner
       - POSTGRES_PASSWORD=scanner
+    container_name: db
 
   web:
     build: .
@@ -24,3 +25,6 @@ services:
       - db
     environment:
       - DATABASE_URL=postgres://scanner:scanner@db:5432/scanner
+
+volumes:
+  dbdata:

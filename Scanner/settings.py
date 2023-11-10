@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-jd($+!6c7!wvs7vqxgsm84-datt=l#n#p+$h=vy&5khiaf-0vr
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1']
 
 
 # Application definition
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'HostReview',
+    'django.contrib.postgres',
 ]
 
 MIDDLEWARE = [
@@ -78,9 +79,9 @@ WSGI_APPLICATION = 'Scanner.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB', 'scanner'),
-        'USER': os.getenv('POSTGRES_USER', 'scanner'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'scanner'),
+        'NAME': 'scanner',
+        'USER': 'scanner',
+        'PASSWORD': 'scanner',
         'HOST': 'db',
         'PORT': '5432',
     }
