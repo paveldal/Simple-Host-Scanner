@@ -1,0 +1,36 @@
+<!-- templates/ssh_sysinfo/scan_results.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Результаты сканирования</title>
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <h1>Результаты сканирования для {{ profile.host }}</h1>
+    {% for result in results %}
+        <div class="card mt-2">
+            <div class="card-header">
+                Сканирование от {{ result.timestamp }}
+            </div>
+            <div class="card-body">
+                <p class="card-text">Операционная система: {{ result.os }} {{ result.os_version }}</p>
+                <p class="card-text">Архитектура: {{ result.architecture }}</p>
+		<p class="card-text">Ядро: {{ result.kernel }}</p>
+                <p class="card-text">Логи сканирования:</p>
+		<div class="terminal-log">
+			<pre>{{ result.log }}</pre>
+		</div>
+            </div>
+        </div>
+    {% empty %}
+        <p>Результаты сканирования отсутствуют.</p>
+    {% endfor %}
+    <a href="{% url 'index' %}" class="btn btn-primary">Назад к профилям</a>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

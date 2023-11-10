@@ -1,0 +1,125 @@
+<!-- templates/ssh_sysinfo/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSH Profile Manager</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <h1>SSH Профили</h1>
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Добавить профиль</h2>
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="id_host">Хост:</label>
+                    <input type="text" class="form-control" id="id_host" name="host" required>
+                </div>
+                <div class="form-group">
+                    <label for="id_login">Логин:</label>
+                    <input type="text" class="form-control" id="id_login" name="login" required>
+                </div>
+                <div class="form-group">
+                    <label for="id_password">Пароль:</label>
+                    <input type="password" class="form-control" id="id_password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="id_port">Порт:</label>
+                    <input type="text" class="form-control" id="id_port" name="port" value="22" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Добавить</button>
+            </form>
+        </div>
+        <div class="col-md-12">
+            <h2>Список профилей</h2>
+            <ul class="list-group">
+                {% for profile in profiles %}
+                <li class="list-group-item">
+                    <div>
+                        {{ profile.host }} ({{ profile.port }})
+                    </div>
+                    <div class="mt-2">
+			<a href="{% url 'scan_results' profile.id %}" class="btn btn-info btn-sm">Результаты</a>
+                        <button class="btn btn-success btn-sm scan-button" data-profile-id="{{ profile.id }}">Сканировать</button>
+                        <span class="scan-status" data-profile-id="{{ profile.id }}" style="display:none;"></span>
+			<a href="{% url 'delete_profile' profile.id %}" class="btn btn-danger btn-sm">Удалить</a>
+                    </div>
+                </li>
+                {% empty %}
+                <li class="list-group-item">Профилей пока нет.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('.scan-button').click(function() {
+        var profileId = $(this).data('profile-id');
+        var button = $(this);
+        var statusSpan = $('.scan-status[data-profile-id="' + profileId + '"]');
+        
+        // Отображаем статус и блокируем кнопку
+        button.prop('disabled', true);
+        statusSpan.text('Сканирование идёт...').show();
+
+        $.ajax({
+            url: '{% url "ajax_scan_system" %}',
+            type: 'GET',
+            data: {
+                'profile_id': profileId
+            },
+            dataType: 'json',
+            success: function(data) {
+                if (data.success) {
+                    // Периодически проверяем статус сканирования
+                    checkScanStatus(profileId, button, statusSpan);
+                } else {
+                    // Если начать сканирование не удалось
+                    statusSpan.text('Ошибка запуска сканирования');
+                    button.prop('disabled', false);
+                }
+            },
+            error: function() {
+                statusSpan.text('Ошибка запроса');
+                button.prop('disabled', false);
+            }
+        });
+    });
+});
+
+function checkScanStatus(profileId, button, statusSpan) {
+    var checkStatusInterval = setInterval(function() {
+        $.ajax({
+            url: '{% url "ajax_check_scan_status" %}',
+            type: 'GET',
+            data: {
+                'profile_id': profileId
+            },
+            dataType: 'json',
+            success: function(data) {
+                if (data.status === 'completed') {
+                    clearInterval(checkStatusInterval);
+                    statusSpan.text('Сканирование завершено');
+                    button.prop('disabled', false);
+                } else if (data.status === 'error') {
+                    clearInterval(checkStatusInterval);
+                    statusSpan.text('Ошибка сканирования');
+                    button.prop('disabled', false);
+                }
+                // Нет необходимости обновлять статус, если сканирование все еще в процессе
+            }
+        });
+    }, 5000); // Проверка статуса каждые 5 секунд
+}
+</script>
+</body>
+</html>
