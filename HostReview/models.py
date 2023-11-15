@@ -41,7 +41,6 @@ class ScanResult(models.Model):
     def __str__(self):
         return f"ScanResult for {self.profile} at {self.timestamp} with status {self.get_status_display()}"
 
-    # Метод для обновления статуса и сохранения ошибки при необходимости
     def update_status(self, new_status, error_msg=None):
         self.status = new_status
         if error_msg:
