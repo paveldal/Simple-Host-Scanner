@@ -1,77 +1,132 @@
 import paramiko
 from .models import Profile, ScanResult
-import re
 
-def detect_os(release_info):
-    distributor_match = re.search(r"Distributor ID:\s*(\S+)", release_info)
-    return distributor_match.group(1) if distributor_match else None
+class SystemInfoCollector:
+    def __init__(self, profile_id):
+        self.profile = Profile.objects.get(pk=profile_id)
+        self.ssh = paramiko.SSHClient()
+        self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        self.connect()
 
-def detect_os_version(release_info):
-    release_match = re.search(r"Release:\s*(\S+)", release_info)
-    return release_match.group(1) if release_match else None
+    def connect(self):
+        try:
+            self.ssh.connect(hostname=self.profile.host, port=self.profile.port,
+                             username=self.profile.login, password=self.profile.password)
+        except paramiko.AuthenticationException:
+            raise Exception("Ошибка аутентификации при подключении к серверу.")
+        except paramiko.SSHException as e:
+            raise Exception(f"Ошибка SSH: {e}")
 
-def detect_architecture(uname_info):
-    return uname_info.split()[11] if len(uname_info.split()) > 11 else 'Unknown'
+    def execute_command(self, command):
+        stdin, stdout, stderr = self.ssh.exec_command(command)
+        return f"execute command: {command}\n{stdout.read().decode('utf-8').strip()}"
 
-def collect_services_info(ssh):
-    stdin, stdout, stderr = ssh.exec_command('systemctl list-units --type=service --state=running')
-    services_output = stdout.read().decode('utf-8')
-    return services_output
+    def collect_os(self):
+        return self.execute_command('lsb_release -a 2>/dev/null | grep -E "Distributor"')
 
-def collect_information(ssh, command_line):
-    stdin, stdout, stderr = ssh.exec_command(command_line)
-    return stdout.read().decode('utf-8')
+    def collect_os_version(self):
+        return self.execute_command('lsb_release -a 2>/dev/null | grep -E "Release"')
+    
+    def collect_architecture(self):
+        return self.execute_command('uname -m')
+    
+    def collect_kernel(self):
+        return self.execute_command('uname -r')
 
-def collect_system_info(profile_id):
-    profile = Profile.objects.get(pk=profile_id)
-    ssh = paramiko.SSHClient()
-    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    collected_logs = ""
-    collected_os_info = ""
-    uname_info = ""
+    def collect_processes(self):
+        return self.execute_command('ps aux')
 
-    try:
-        ssh.connect(hostname=profile.host, port=profile.port, username=profile.login, password=profile.password)
-        scan_result = ScanResult(profile=profile, status='in_progress')
-        scan_result.save()
+    def collect_system_load(self):
+        return self.execute_command('uptime')
+
+    def collect_disk_space(self):
+        return self.execute_command('df -h')
+
+    def collect_memory_status(self):
+        return self.execute_command('free -m')
+
+    def collect_sys_logs(self):
+        try:
+            log_files_command = "find /var/log -type f -name '*.log'"
+            log_files = self.execute_command(log_files_command).splitlines()
+
+            collected_logs = ""
+
+            for log_file in log_files:
+                try:
+                    log_content = self.execute_command(f'cat {log_file} 2>/dev/null')
+                    if log_content:
+                        collected_logs += f"\n--- {log_file} ---\n{log_content}\n"
+                except Exception as e:
+                    collected_logs += f"\n--- Error accessing {log_file}: {e} ---\n"
+
+            return collected_logs if collected_logs else "No logs found or accessible."
+
+        except Exception as e:
+            return f"Error collecting log files: {e}"
+
+    def collect_network_info(self):
+        return self.execute_command('ss -tulpn')
+
+    def detect_package_manager(self):
+        try:
+            if self.execute_command('which dpkg'):
+                return 'dpkg -l'
+            elif self.execute_command('which rpm'):
+                return 'rpm -qa'
+            elif self.execute_command('which pacman'):
+                return 'pacman -Q'
+        except Exception:
+            return None
         
-        os_command_line = 'lsb_release -a 2>/dev/null | grep -E "Distributor|Release"'
-        collected_os_info = collect_information(ssh, os_command_line)
-        collected_logs += f"{os_command_line} output:\n{collected_os_info}\n\n"
+    def collect_installed_packages(self):
+        package_manager_cmd = self.detect_package_manager()
+        if package_manager_cmd:
+            return self.execute_command(package_manager_cmd)
+        else:
+            return 'Unknown'
+    
+    def collect_users_info(self):
+        return self.execute_command('cat /etc/passwd')
+    
+    def collect_groups_info(self):
+        return self.execute_command('cat /etc/group')
+    
+    def collect_sudo_info(self):
+        return self.execute_command('sudo -l')
 
-        arch_command_line = 'uname -m'
-        architecture = collect_information(ssh, arch_command_line)
-        collected_logs += f"{arch_command_line} output:\n{architecture}\n\n"
+    def collect_firewall_status(self):
+        return self.execute_command('iptables -L')
 
-        kernel_command_line = 'uname -r'
-        kernel = collect_information(ssh, kernel_command_line)
-        collected_logs += f"{kernel_command_line} output:\n{kernel}\n\n"
+    def close_connection(self):
+        if self.ssh:
+            self.ssh.close()
 
-        collected_logs = '\n'.join([line for line in collected_logs.splitlines() if line.strip()])
-        
-        os_detected = detect_os(collected_os_info)
-        os_version = detect_os_version(collected_os_info)
-        
-        scan_result.log = collected_logs
-        scan_result.os = os_detected
-        scan_result.os_version = os_version
-        scan_result.architecture = architecture
-        scan_result.kernel = kernel
-        scan_result.status = 'completed'
+    def perform_scan(self):
+        scan_result = ScanResult(profile=self.profile, status='in_progress')
         scan_result.save()
+        try:
+            scan_result.os = self.collect_os()
+            scan_result.os_version = self.collect_os_version()
+            scan_result.architecture = self.collect_architecture()
+            scan_result.kernel = self.collect_kernel()
+            scan_result.active_processes = self.collect_processes()
+            scan_result.system_load = self.collect_system_load()
+            scan_result.disk_space = self.collect_disk_space()
+            scan_result.memory_status = self.collect_memory_status()
+            scan_result.sys_logs = self.collect_sys_logs()
+            scan_result.network_info = self.collect_network_info()
+            scan_result.installed_packages = self.collect_installed_packages()
+            scan_result.users = self.collect_users_info()
+            scan_result.groups = self.collect_groups_info()
+            scan_result.sudo_permissions = self.collect_sudo_info()
+            scan_result.firewall_status = self.collect_firewall_status()
+            scan_result.status = 'completed'
+            scan_result.save()
 
-    except paramiko.AuthenticationException:
-        collected_logs += "Ошибка аутентификации при подключении к серверу.\n"
-        scan_result.status = 'error'
-        scan_result.save()
-    except paramiko.SSHException as sshException:
-        collected_logs += f"Ошибка SSH: {sshException}\n"
-        scan_result.status = 'error'
-        scan_result.save()
-    except Exception as e:
-        collected_logs += f"Произошла непредвиденная ошибка: {e}\n"
-        scan_result.status = 'error'
-        scan_result.save()
-    finally:
-        if ssh:
-            ssh.close()
+        except Exception as e:
+            scan_result.status = 'error'
+            scan_result.error_message = str(e)
+            scan_result.save()
+        finally:
+            self.close_connection()

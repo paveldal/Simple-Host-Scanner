@@ -1,0 +1,213 @@
+<!-- Аккордеон для деталей сканирования -->
+<div class="accordion" id="accordionDetail{{ result.id }}">
+
+    <!-- Спойлер для Операционной системы -->
+    <div class="card">
+        <div class="card-header" id="headingOS{{ result.id }}">
+            <h2 class="mb-0">
+                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseOS{{ result.id }}" aria-expanded="false" aria-controls="collapseOS{{ result.id }}">
+                    Операционная система
+                </button>
+            </h2>
+        </div>
+        <div id="collapseOS{{ result.id }}" class="collapse" aria-labelledby="headingOS{{ result.id }}" data-parent="#accordionDetail{{ result.id }}">
+            <div class="card-body">
+                <pre>{{ result.os }}</pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Спойлер для Версии ОС -->
+    <div class="card">
+        <div class="card-header" id="headingOSVersion{{ result.id }}">
+            <h2 class="mb-0">
+                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseOSVersion{{ result.id }}" aria-expanded="false" aria-controls="collapseOSVersion{{ result.id }}">
+                    Версия операционной системы
+                </button>
+            </h2>
+        </div>
+        <div id="collapseOSVersion{{ result.id }}" class="collapse" aria-labelledby="headingOSVersion{{ result.id }}" data-parent="#accordionDetail{{ result.id }}">
+            <div class="card-body">
+                <pre>{{ result.os_version }}</pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Спойлер для Архитектуры -->
+    <div class="card">
+        <div class="card-header" id="headingArchitecture{{ result.id }}">
+            <h2 class="mb-0">
+                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseArchitecture{{ result.id }}" aria-expanded="false" aria-controls="collapseArchitecture{{ result.id }}">
+                    Архитектура
+                </button>
+            </h2>
+        </div>
+        <div id="collapseArchitecture{{ result.id }}" class="collapse" aria-labelledby="headingArchitecture{{ result.id }}" data-parent="#accordionDetail{{ result.id }}">
+            <div class="card-body">
+                <pre>{{ result.architecture }}</pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Спойлер для Ядра -->
+    <div class="card">
+        <div class="card-header" id="headingKernel{{ result.id }}">
+            <h2 class="mb-0">
+                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseKernel{{ result.id }}" aria-expanded="false" aria-controls="collapseKernel{{ result.id }}">
+                    Ядро
+                </button>
+            </h2>
+        </div>
+        <div id="collapseKernel{{ result.id }}" class="collapse" aria-labelledby="headingKernel{{ result.id }}" data-parent="#accordionDetail{{ result.id }}">
+            <div class="card-body">
+                <pre>{{ result.kernel }}</pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Спойлер для Загрузки системы -->
+    <div class="card">
+        <div class="card-header" id="headingSystemLoad{{ result.id }}">
+            <h2 class="mb-0">
+                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseSystemLoad{{ result.id }}" aria-expanded="false" aria-controls="collapseSystemLoad{{ result.id }}">
+                    Загрузка системы
+                </button>
+            </h2>
+        </div>
+        <div id="collapseSystemLoad{{ result.id }}" class="collapse" aria-labelledby="headingSystemLoad{{ result.id }}" data-parent="#accordionDetail{{ result.id }}">
+            <div class="card-body">
+                <pre>{{ result.system_load }}</pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Спойлер для Дискового пространства -->
+    <div class="card">
+        <div class="card-header" id="headingDiskSpace{{ result.id }}">
+            <h2 class="mb-0">
+                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseDiskSpace{{ result.id }}" aria-expanded="false" aria-controls="collapseDiskSpace{{ result.id }}">
+                    Дисковое пространство
+                </button>
+            </h2>
+        </div>
+        <div id="collapseDiskSpace{{ result.id }}" class="collapse" aria-labelledby="headingDiskSpace{{ result.id }}" data-parent="#accordionDetail{{ result.id }}">
+            <div class="card-body">
+                <pre>{{ result.disk_space }}</pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Спойлер для Использования памяти -->
+    <div class="card">
+        <div class="card-header" id="headingMemoryStatus{{ result.id }}">
+            <h2 class="mb-0">
+                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseMemoryStatus{{ result.id }}" aria-expanded="false" aria-controls="collapseMemoryStatus{{ result.id }}">
+                    Использование памяти
+                </button>
+            </h2>
+        </div>
+        <div id="collapseMemoryStatus{{ result.id }}" class="collapse" aria-labelledby="headingMemoryStatus{{ result.id }}" data-parent="#accordionDetail{{ result.id }}">
+            <div class="card-body">
+                <pre>{{ result.memory_status }}</pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Спойлер для Активных процессов -->
+    <div class="card">
+        <div class="card-header" id="headingActiveProcesses{{ result.id }}">
+            <h2 class="mb-0">
+                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseActiveProcesses{{ result.id }}" aria-expanded="false" aria-controls="collapseActiveProcesses{{ result.id }}">
+                    Активные процессы
+                </button>
+            </h2>
+        </div>
+        <div id="collapseActiveProcesses{{ result.id }}" class="collapse" aria-labelledby="headingActiveProcesses{{ result.id }}" data-parent="#accordionDetail{{ result.id }}">
+            <div class="card-body">
+                <pre>{{ result.active_processes }}</pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Спойлер для Системных логов -->
+    <div class="card">
+        <div class="card-header" id="headingSysLogs{{ result.id }}">
+            <h2 class="mb-0">
+                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseSysLogs{{ result.id }}" aria-expanded="false" aria-controls="collapseSysLogs{{ result.id }}">
+                    Системные логи
+                </button>
+            </h2>
+        </div>
+        <div id="collapseSysLogs{{ result.id }}" class="collapse" aria-labelledby="headingSysLogs{{ result.id }}" data-parent="#accordionDetail{{ result.id }}">
+            <div class="card-body">
+                <pre>{{ result.sys_logs }}</pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Спойлер для Сетевой информации -->
+    <div class="card">
+        <div class="card-header" id="headingNetworkInfo{{ result.id }}">
+            <h2 class="mb-0">
+                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseNetworkInfo{{ result.id }}" aria-expanded="false" aria-controls="collapseNetworkInfo{{ result.id }}">
+                    Сетевая информация
+                </button>
+            </h2>
+        </div>
+        <div id="collapseNetworkInfo{{ result.id }}" class="collapse" aria-labelledby="headingNetworkInfo{{ result.id }}" data-parent="#accordionDetail{{ result.id }}">
+            <div class="card-body">
+                <pre>{{ result.network_info }}</pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Спойлер для Установленных пакетов -->
+    <div class="card">
+        <div class="card-header" id="headingInstalledPackages{{ result.id }}">
+            <h2 class="mb-0">
+                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseInstalledPackages{{ result.id }}" aria-expanded="false" aria-controls="collapseInstalledPackages{{ result.id }}">
+                    Установленные пакеты
+                </button>
+            </h2>
+        </div>
+        <div id="collapseInstalledPackages{{ result.id }}" class="collapse" aria-labelledby="headingInstalledPackages{{ result.id }}" data-parent="#accordionDetail{{ result.id }}">
+            <div class="card-body">
+                <pre>{{ result.installed_packages }}</pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Спойлер для Информации о пользователях и группах -->
+    <div class="card">
+        <div class="card-header" id="headingUsersGroups{{ result.id }}">
+            <h2 class="mb-0">
+                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseUsersGroups{{ result.id }}" aria-expanded="false" aria-controls="collapseUsersGroups{{ result.id }}">
+                    Информация о пользователях и группах
+                </button>
+            </h2>
+        </div>
+        <div id="collapseUsersGroups{{ result.id }}" class="collapse" aria-labelledby="headingUsersGroups{{ result.id }}" data-parent="#accordionDetail{{ result.id }}">
+            <div class="card-body">
+                <pre>{{ result.users }}</pre>
+                <pre>{{ result.groups }}</pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Спойлер для Состояния брандмауэра -->
+    <div class="card">
+        <div class="card-header" id="headingFirewallStatus{{ result.id }}">
+            <h2 class="mb-0">
+                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseFirewallStatus{{ result.id }}" aria-expanded="false" aria-controls="collapseFirewallStatus{{ result.id }}">
+                    Состояние брандмауэра
+                </button>
+            </h2>
+        </div>
+        <div id="collapseFirewallStatus{{ result.id }}" class="collapse" aria-labelledby="headingFirewallStatus{{ result.id }}" data-parent="#accordionDetail{{ result.id }}">
+            <div class="card-body">
+                <pre>{{ result.firewall_status }}</pre>
+            </div>
+        </div>
+    </div>
+
+</div>
