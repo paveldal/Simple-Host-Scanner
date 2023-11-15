@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import Profile, ScanResult
 from .forms import ProfileForm
-from .utils import collect_system_info
+from .utils import *
 from django.contrib import messages
 from django.http import JsonResponse
 
@@ -22,7 +22,8 @@ def ajax_scan_system(request):
     profile_id = request.GET.get('profile_id')
     if profile_id:
         try:
-            collect_system_info(profile_id)
+            collector = SystemInfoCollector(profile_id)
+            collector.perform_scan()
             return JsonResponse({"success": True, "message": "Сканирование началось."})
         except Profile.DoesNotExist:
             return JsonResponse({"success": False, "message": "Профиль не найден."})
